@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+const { verifyToken } = require("../middleware/token");
 const {
   upvote,
   downvote,
@@ -7,9 +8,9 @@ const {
   getVotes,
 } = require("../controllers/votes.controller");
 
-router.route("/upvote").post(upvote);
-router.route("/downvote").post(downvote);
-router.route("/unvote").delete(unvote);
+router.route("/upvote/:entity_type/:entity_id").post(verifyToken, upvote);
+router.route("/downvote/:entity_type/:entity_id").post(verifyToken, downvote);
+router.route("/unvote/:entity_type/:entity_id").delete(verifyToken, unvote);
 router.route("/votes/:entity_type/:entity_id").get(getVotes);
 
 module.exports = router;

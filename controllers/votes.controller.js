@@ -7,7 +7,10 @@ exports.upvote = async (req, res, next) => {
 
   logger.info("Attempting to upvote");
   try {
-    const { vote } = req.body;
+    const vote = {
+      ...req.params,
+      subject: req.user.username
+    };
     const validated = await voteSchema.validateAsync(vote);
 
     logger.info("Vote data validated");
@@ -30,7 +33,10 @@ exports.downvote = async (req, res, next) => {
   logger.info("Attempting to downvote");
 
   try {
-    const { vote } = req.body;
+    const vote = {
+      ...req.params,
+      subject: req.user.username
+    };
     const validated = await voteSchema.validateAsync(vote);
 
     logger.info("Vote data validated");
@@ -54,7 +60,10 @@ exports.unvote = async (req, res, next) => {
   logger.info("Attempting to remove vote");
 
   try {
-    const { vote } = req.body;
+    const vote = {
+      ...req.params,
+      subject: req.user.username
+    };
     const validated = await voteSchema.validateAsync(vote);
 
     logger.info("Vote data validated");

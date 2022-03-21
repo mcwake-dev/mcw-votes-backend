@@ -3,6 +3,7 @@ const { expect, it, describe, beforeAll, afterAll } = require("@jest/globals");
 const request = require("supertest");
 const db = require("../../db/db");
 const app = require("../../app");
+const getToken = require("../../utils/makeToken");
 
 beforeAll(async () => {
   await db.del("downvoted:article:1");
@@ -16,16 +17,14 @@ afterAll(async () => {
 });
 
 describe("POST /api/votes/upvote", () => {
+  it("should respond with a 401 error if accessed without a valid token", () =>
+    request(app)
+      .post("/api/votes/upvote/article/1")
+      .expect(401))
   it("should create a positive vote for an entity given valid values", () =>
     request(app)
-      .post("/api/votes/upvote")
-      .send({
-        vote: {
-          entity_type: "article",
-          entity_id: 1,
-          voter_id: "testuser",
-        },
-      })
+      .post("/api/votes/upvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser")}`)
       .expect(201)
       .then(({ body: { votes } }) => {
         expect(votes).toEqual(
@@ -39,14 +38,8 @@ describe("POST /api/votes/upvote", () => {
       }));
   it("should not allow more than one vote per user per entity", () =>
     request(app)
-      .post("/api/votes/upvote")
-      .send({
-        vote: {
-          entity_type: "article",
-          entity_id: 1,
-          voter_id: "testuser",
-        },
-      })
+      .post("/api/votes/upvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser")}`)
       .expect(201)
       .then(({ body: { votes } }) => {
         expect(votes).toEqual(
@@ -60,14 +53,8 @@ describe("POST /api/votes/upvote", () => {
       }));
   it("should allow one vote per user per entity", () =>
     request(app)
-      .post("/api/votes/upvote")
-      .send({
-        vote: {
-          entity_type: "article",
-          entity_id: 1,
-          voter_id: "testuser2",
-        },
-      })
+      .post("/api/votes/upvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser2")}`)
       .expect(201)
       .then(({ body: { votes } }) => {
         expect(votes).toEqual(
@@ -79,29 +66,17 @@ describe("POST /api/votes/upvote", () => {
           })
         );
       }));
-  it("should throw an error if incomplete information is provided (missing entity type)", () =>
-    request(app)
-      .post("/api/votes/upvote")
-      .send({
-        vote: {
-          entity_id: 1,
-          voter_id: "testuser",
-        },
-      })
-      .expect(400));
 });
 
 describe("POST /api/votes/downvote", () => {
+  it("should respond with a 401 error if accessed without a valid token", () =>
+  request(app)
+    .post("/api/votes/downvote/article/1")
+    .expect(401))
   it("should create a negative vote for an entity given valid values", () =>
     request(app)
-      .post("/api/votes/downvote")
-      .send({
-        vote: {
-          entity_type: "article",
-          entity_id: 1,
-          voter_id: "testuser",
-        },
-      })
+      .post("/api/votes/downvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser")}`)
       .expect(201)
       .then(({ body: { votes } }) => {
         expect(votes).toEqual(
@@ -113,19 +88,10 @@ describe("POST /api/votes/downvote", () => {
           })
         );
       }));
-  it("should throw an error if incomplete information is provided (missing entity type)", () =>
-    request(app)
-      .post("/api/votes/upvote")
-      .send({
-        vote: {
-          entity_id: 1,
-          voter_id: "testuser",
-        },
-      })
-      .expect(400));
   it("should not allow more than one vote per user per entity", () =>
     request(app)
-      .post("/api/votes/downvote")
+      .post("/api/votes/downvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser")}`)
       .send({
         vote: {
           entity_type: "article",
@@ -146,14 +112,8 @@ describe("POST /api/votes/downvote", () => {
       }));
   it("should allow one vote per user per entity", () =>
     request(app)
-      .post("/api/votes/downvote")
-      .send({
-        vote: {
-          entity_type: "article",
-          entity_id: 1,
-          voter_id: "testuser2",
-        },
-      })
+      .post("/api/votes/downvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser2")}`)
       .expect(201)
       .then(({ body: { votes } }) => {
         expect(votes).toEqual(
@@ -167,10 +127,15 @@ describe("POST /api/votes/downvote", () => {
       }));
 });
 
-describe("DELETE /api/votes", () => {
+describe("DELETE /api/votes/article/1 ", () => {
+  it("should respond with a 401 error if accessed without a valid token", () =>
+  request(app)
+    .delete("/api/votes/unvote/article/1")
+    .expect(401))
   it("should remove a vote when supplied with valid information", () =>
     request(app)
-      .delete("/api/votes/unvote")
+      .delete("/api/votes/unvote/article/1")
+      .set("Authorization", `Bearer ${getToken("testuser")}`)
       .send({
         vote: {
           entity_type: "article",
