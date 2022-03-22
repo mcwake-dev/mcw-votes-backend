@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test-dev": "jest __tests__/*",
-    "dev": "nodemon -- -r ./env/development.js index.js"
+    "test": "jest __tests__/*",
+    "dev": "nodemon -- -r ./env/development.js index.js",
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
