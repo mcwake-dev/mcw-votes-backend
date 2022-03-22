@@ -1,4 +1,7 @@
-require("../../env/test");
+try {
+  require("../../env/test");
+} catch(err) {}
+
 const { expect, it, describe, beforeAll, afterAll } = require("@jest/globals");
 const request = require("supertest");
 const db = require("../../db/db");
