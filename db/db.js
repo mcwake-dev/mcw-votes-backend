@@ -10,9 +10,7 @@ switch(process.env.NODE_ENV) {
     });
     break;
   case "production":
-    client = asyncRedis.createClient({
-      redis_url: process.env.REDISCLOUD_URL
-    });
+    client = asyncRedis.createClient(process.env.REDISCLOUD_URL);
     break;
   default: 
     client = asyncRedis.createClient();
